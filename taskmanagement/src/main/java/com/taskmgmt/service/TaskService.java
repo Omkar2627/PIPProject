@@ -96,6 +96,15 @@ public class TaskService {
             throw new RuntimeException("Only task owner, assignee, or admin can update status!");
         }
 
+        if (task.getStatus() == TaskStatus.DONE && !isAdmin) {
+            throw new RuntimeException("Only admin can change the status once the task is DONE!");
+        }
+
+
+        if (task.getStatus() == TaskStatus.DONE && newStatus == TaskStatus.IN_PROGRESS && !isAdmin) {
+            throw new RuntimeException("Only admin can move DONE task back to IN_PROGRESS!");
+        }
+
         task.setStatus(newStatus);
         Task updated = taskRepository.save(task);
 
