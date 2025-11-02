@@ -1,4 +1,4 @@
-package com.taskmgmt.taskmanagement;
+package com.taskmgmt;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

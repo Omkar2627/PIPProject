@@ -30,20 +30,18 @@ public class Task {
 
     private Instant createdAt = Instant.now();
 
-//    @ManyToOne
-//    @JoinColumn(name = "user_id")
-//    private User user;
 
-    // Who created this task
+
+
     @ManyToOne
     @JoinColumn(name = "created_by", nullable = false)
     private User createdBy;
 
-    // Users assigned (via TaskAssignee join table)
+
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
     private List<TaskAssignee> assignees;
 
-    // Notifications related to this task
+
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
     private List<Notification> notifications;
 }

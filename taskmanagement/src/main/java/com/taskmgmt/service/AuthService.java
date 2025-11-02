@@ -32,7 +32,7 @@ public class AuthService {
         return "User registered successfully";
     }
 
-    // Login and return access token (you can also return refresh token if needed)
+    //login
     public AuthResponseDto login(LoginRequestDto dto) {
         // Authenticate user
         authenticationManager.authenticate(
@@ -45,7 +45,7 @@ public class AuthService {
         // Generate access token
         String accessToken = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
 
-        // For now, reuse same token as refresh token or implement a separate refresh token if needed
+
         String refreshToken = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
 
         return new AuthResponseDto(accessToken, refreshToken, user.getRole().name());

@@ -21,9 +21,9 @@ public class TaskService {
     private final UserRepository userRepository;
     private final TaskAssigneeRepository taskAssigneeRepository;
 
-    /**
-     * Admin creates a new task and assigns it to a user
-     */
+
+     //Admin creates a new task and assigns it to a user
+
     public TaskResponseDto createTaskByAdmin(TaskRequestDto dto, String adminEmail) {
         User assignee = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -50,9 +50,9 @@ public class TaskService {
         return TaskResponseDto.fromEntity(savedTask);
     }
 
-    /**
-     * Get tasks for a specific user (via email)
-     */
+
+     //Get tasks for a specific user (via email)
+
     public List<TaskResponseDto> getTasksForUser(String userEmail) {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -66,9 +66,9 @@ public class TaskService {
         return dtos;
     }
 
-    /**
-     * Get all tasks (Admin only)
-     */
+
+     // Get all tasks (Admin only)
+
     public List<TaskResponseDto> getAllTasks() {
         List<Task> tasks = taskRepository.findAll();
         List<TaskResponseDto> dtos = new ArrayList<>();
@@ -78,9 +78,9 @@ public class TaskService {
         return dtos;
     }
 
-    /**
-     * Update task status (Admin or User)
-     */
+
+     // Update task status (Admin or User)
+
     public TaskResponseDto updateTaskStatus(Long taskId, TaskStatus newStatus, String loggedInUserEmail) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
@@ -103,9 +103,9 @@ public class TaskService {
     }
 
 
-    /**
-     * Assign a new user to an existing task (collaboration)
-     */
+
+     // Assign a new user to an existing task (collaboration)
+
 
     public List<AssigneeDto> assignUsersToTask(Long taskId, List<Long> assigneeIds, String loggedInUserEmail) {
         Task task = taskRepository.findById(taskId)

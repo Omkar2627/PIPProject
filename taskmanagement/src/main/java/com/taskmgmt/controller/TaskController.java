@@ -40,7 +40,7 @@ public class TaskController {
         return ResponseEntity.ok(tasks);
     }
 
-    // Create a new task (Admin only)
+    // Create a new task
     @PostMapping
     public ResponseEntity<TaskResponseDto> createTask(
             @RequestBody TaskRequestDto dto,

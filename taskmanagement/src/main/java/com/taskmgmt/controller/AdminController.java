@@ -16,7 +16,7 @@ public class AdminController {
 
     private final UserService userService;
 
-    // Get all users - Admin only
+    // Get all users
     @GetMapping("/users")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UserResponseDto>> getAllUsers() {
@@ -24,7 +24,7 @@ public class AdminController {
         return ResponseEntity.ok(users);
     }
 
-    // Get user by id - Admin only
+    // Get user by id
     @GetMapping("/users/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponseDto> getUserById(@PathVariable Long id) {
