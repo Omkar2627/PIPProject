@@ -10,8 +10,10 @@ import com.taskmgmt.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -77,6 +79,20 @@ public class TaskService {
         }
         return dtos;
     }
+
+
+    /**
+     * List or filter tasks by status, due date, or assignee
+     */
+    public List<TaskResponseDto> getFilteredTasks(TaskStatus status, LocalDate dueDate, String assigneeEmail) {
+        List<Task> tasks = taskRepository.findFilteredTasks(status, dueDate, assigneeEmail);
+
+        return tasks.stream()
+                .map(TaskResponseDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+
 
     /**
      * Update task status (Admin or User)

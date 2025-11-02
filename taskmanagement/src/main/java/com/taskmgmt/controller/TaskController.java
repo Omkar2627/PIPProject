@@ -7,10 +7,12 @@ import com.taskmgmt.entity.User;
 import com.taskmgmt.repository.UserRepository;
 import com.taskmgmt.service.TaskService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -21,24 +23,36 @@ public class TaskController {
     private final TaskService taskService;
     private final UserRepository userRepository;
 
-    // Get tasks for logged-in user
+    // Get tasks user
     @GetMapping
-    public ResponseEntity<List<TaskResponseDto>> getTasks(Authentication authentication) {
-        String email = authentication.getName();
+    public ResponseEntity<List<TaskResponseDto>> getTasks(
+            @RequestParam(required = false) TaskStatus status,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dueDate,
+            @RequestParam(required = false) String assigneeEmail,
+            Authentication authentication) {
 
+        String email = authentication.getName();
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         List<TaskResponseDto> tasks;
 
-        if (user.getRole() == Role.ADMIN) {
-            tasks = taskService.getAllTasks(); // Admin sees all tasks
-        } else {
-            tasks = taskService.getTasksForUser(email); // User sees assigned tasks
+        //  If no filters are provided → get tasks based on role
+        if (status == null && dueDate == null && assigneeEmail == null) {
+            if (user.getRole() == Role.ADMIN) {
+                tasks = taskService.getAllTasks(); // Admin sees all tasks
+            } else {
+                tasks = taskService.getTasksForUser(email); // User sees assigned tasks
+            }
+        }
+        //  If any filter provided → use filtering logic
+        else {
+            tasks = taskService.getFilteredTasks(status, dueDate, assigneeEmail);
         }
 
         return ResponseEntity.ok(tasks);
     }
+
 
     // Create a new task (Admin only)
     @PostMapping
