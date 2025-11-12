@@ -35,8 +35,12 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
-
-
+		<!--OpenApi(springdoc) Swagger Dependency-->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-ui</artifactId>
+			<version>1.7.0</version>
+		</dependency>
 		<!-- DB -->
 		<dependency>
 			<groupId>com.h2database</groupId>
