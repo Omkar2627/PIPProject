@@ -23,9 +23,9 @@ public class TaskService {
     private final UserRepository userRepository;
     private final TaskAssigneeRepository taskAssigneeRepository;
 
-    /**
-     * Admin creates a new task and assigns it to a user
-     */
+
+    // * Admin creates a new task and assigns it to a user
+
     public TaskResponseDto createTaskByAdmin(TaskRequestDto dto, String adminEmail) {
         User assignee = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -52,9 +52,9 @@ public class TaskService {
         return TaskResponseDto.fromEntity(savedTask);
     }
 
-    /**
-     * Get tasks for a specific user (via email)
-     */
+
+    // * Get tasks for a specific user (via email)
+
     public List<TaskResponseDto> getTasksForUser(String userEmail) {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -68,9 +68,9 @@ public class TaskService {
         return dtos;
     }
 
-    /**
-     * Get all tasks (Admin only)
-     */
+
+    // * Get all tasks (Admin only)
+
     public List<TaskResponseDto> getAllTasks() {
         List<Task> tasks = taskRepository.findAll();
         List<TaskResponseDto> dtos = new ArrayList<>();
@@ -81,9 +81,9 @@ public class TaskService {
     }
 
 
-    /**
-     * List or filter tasks by status, due date, or assignee
-     */
+
+    // * List or filter tasks by status, due date, or assignee
+
     public List<TaskResponseDto> getFilteredTasks(TaskStatus status, LocalDate dueDate, String assigneeEmail) {
         List<Task> tasks = taskRepository.findFilteredTasks(status, dueDate, assigneeEmail);
 
@@ -94,9 +94,9 @@ public class TaskService {
 
 
 
-    /**
-     * Update task status (Admin or User)
-     */
+
+    // * Update task status (Admin or User)
+
     public TaskResponseDto updateTaskStatus(Long taskId, TaskStatus newStatus, String loggedInUserEmail) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
@@ -127,10 +127,16 @@ public class TaskService {
         return TaskResponseDto.fromEntity(updated);
     }
 
+    public List<User> findAssigneeUsers(Task task) {
+        List<TaskAssignee> assignees = taskAssigneeRepository.findByTask(task);
+        return assignees.stream()
+                .map(TaskAssignee::getUser)
+                .collect(Collectors.toList());
+    }
 
-    /**
-     * Assign a new user to an existing task (collaboration)
-     */
+
+    // * Assign a new user to an existing task (collaboration)
+
 
     public List<AssigneeDto> assignUsersToTask(Long taskId, List<Long> assigneeIds, String loggedInUserEmail) {
         Task task = taskRepository.findById(taskId)
@@ -139,10 +145,11 @@ public class TaskService {
         User loggedInUser = userRepository.findByEmail(loggedInUserEmail)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (!task.getCreatedBy().equals(loggedInUser.getId())
+        if (!task.getCreatedBy().equals(loggedInUser)
                 && loggedInUser.getRole() != Role.ADMIN) {
             throw new RuntimeException("Only task owner or admin can assign users!");
         }
+
 
 
         List<AssigneeDto> assignedUsers = new ArrayList<>();
@@ -166,6 +173,25 @@ public class TaskService {
         }
 
         return assignedUsers;
+    }
+
+    public List<TaskResponseDto> getOverdueTasks(String email) {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<Task> tasks;
+
+        if (user.getRole() == Role.ADMIN) {
+            tasks = taskRepository.findOverdueTasksForAdmin(LocalDate.now());
+        } else {
+            tasks = taskRepository.findOverdueTasksForUser(email, LocalDate.now());
+        }
+
+        return tasks.stream()
+                .map(TaskResponseDto::fromEntity)
+                .toList();
+
     }
 
 }

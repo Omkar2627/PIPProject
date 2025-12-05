@@ -93,5 +93,13 @@ public class TaskController {
         List<AssigneeDto> assignedUsers = taskService.assignUsersToTask(taskId, request.getAssigneeIds(), authentication.getName());
         return ResponseEntity.ok(assignedUsers);
     }
+    @GetMapping("/overdue")
+    public ResponseEntity<List<TaskResponseDto>> getOverdueTasks(Authentication authentication) {
+
+        String email = authentication.getName();
+        List<TaskResponseDto> overdueTasks = taskService.getOverdueTasks(email);
+
+        return ResponseEntity.ok(overdueTasks);
+    }
 
 }

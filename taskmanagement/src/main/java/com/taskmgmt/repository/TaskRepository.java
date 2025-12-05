@@ -13,6 +13,22 @@ import java.util.List;
 public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findByStatus(com.taskmgmt.entity.TaskStatus status);
     List<Task> findByDueDateBeforeAndStatusNot(LocalDate date, com.taskmgmt.entity.TaskStatus done); // for overdue
+    List<Task> findByDueDateBetweenAndStatusNot(LocalDate start, LocalDate end, TaskStatus status);
+
+    @Query("SELECT t FROM Task t JOIN t.assignees a " +
+            "WHERE a.user.email = :email " +
+            "AND t.dueDate < :today " +
+            "AND t.status <> com.taskmgmt.entity.TaskStatus.DONE")
+    List<Task> findOverdueTasksForUser(@Param("email") String email,
+                                       @Param("today") LocalDate today);
+
+
+    @Query("""
+    SELECT t FROM Task t
+    WHERE t.dueDate < :today AND t.status <> 'DONE'
+""")
+    List<Task> findOverdueTasksForAdmin(@Param("today") LocalDate today);
+
     List<Task> findByCreatedBy(User user);
 
     @Query("""

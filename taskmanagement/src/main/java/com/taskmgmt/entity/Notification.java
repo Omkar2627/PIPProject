@@ -24,7 +24,11 @@ public class Notification {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    private String type;
+
     @ManyToOne
     @JoinColumn(name = "task_id", nullable = false)
     private Task task;
+    private LocalDateTime sentAt;
+    private boolean sent;
 }
